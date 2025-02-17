@@ -3,10 +3,12 @@ class_name Terrain
 extends Path2D
 
 #region exports
-## check to generate the polygon, can't use tool buttons because 4.3
-@export var draw_terrain: bool = false:
-	set(value):
-		draw()
+@export_group("Bake Settings")
+## maximum number of subdivisions, higher number - more accuracy, less performance
+@export var max_segments: int = 5
+## the amount of degrees the baked curve can deviate from the real curve until it has to be subdivided,
+## lower number - more accuracy, less performance
+@export var tolerange_degrees: float = 1.0
 @export_group("Base Polygon")
 ## the tint of the polygon, should be white if it has a texture unless desired otherwise
 @export var polygon_modulate: Color = Color.WHITE:
@@ -19,6 +21,11 @@ extends Path2D
 		draw()
 		polygon_texture = value
 		polygon_texture.changed.connect(draw)
+## should the polygon's texture be repeated
+@export var polygon_texture_repeat: CanvasItem.TextureRepeat = CanvasItem.TEXTURE_REPEAT_ENABLED:
+	set(value):
+		draw()
+		polygon_texture_repeat = value
 ## offset of the texture
 @export var texture_offset: Vector2 = Vector2.ZERO:
 	set(value):
@@ -78,16 +85,11 @@ extends Path2D
 		draw()
 		outline_cap_mode = value
 @export_group("Collision")
-## should a collision polygon be created
+## should a collision polygon be created SHOULD BE CHILD OF A StaticBody2D FOR THE COLLISION TO WORK
 @export var add_collision: bool = true:
 	set(value):
 		draw()
 		add_collision = value
-## should the collision polygon be visible (it looks ugly)
-@export var visible_collision: bool = false:
-	set(value):
-		draw()
-		visible_collision = value
 #endregion
 
 #region misc variables
@@ -102,13 +104,12 @@ func _ready() -> void:
 
 func draw() -> void:
 	for part: Node in terrain_parts:
-		print(part)
-		part.queue_free()
 		terrain_parts.erase(part)
-	var baked_points: PackedVector2Array = curve.get_baked_points()
+		part.free()
+	var baked_points: PackedVector2Array = curve.tessellate(max_segments, tolerange_degrees)
 	draw_terrain_polygon(baked_points)
 	if add_collision:
-		create_collision_polygon(baked_points)
+		create_collision_polygon(curve.tessellate(3, 4))
 	if add_outline:
 		draw_outline(baked_points)
 
@@ -123,17 +124,18 @@ func draw_terrain_polygon(points: PackedVector2Array) -> void:
 	polygon.texture_offset = texture_offset
 	polygon.texture_scale = texture_scale
 	polygon.texture_rotation = texture_rotation
+	polygon.texture_repeat = polygon_texture_repeat
 	terrain_parts.append(polygon)
-	print("Drawing terrain polygon")
 
 
 func create_collision_polygon(points: PackedVector2Array) -> void:
+	await ready
 	var polygon: CollisionPolygon2D = CollisionPolygon2D.new()
-	add_child(polygon)
+	get_parent().call_deferred("add_child", polygon)
+	polygon.position = position
 	terrain_parts.append(polygon)
 	polygon.polygon = points
-	polygon.visible = visible_collision
-	print("Generating collision polygon")
+	polygon.hide()
 
 
 func draw_outline(points: PackedVector2Array) -> void:
@@ -143,6 +145,10 @@ func draw_outline(points: PackedVector2Array) -> void:
 	outline.default_color = outline_modulate
 	if outline_texture:
 		outline.texture = outline_texture
+	if outline_gradient:
+		outline.gradient = outline_gradient
+	outline.texture_mode = outline_texture_mode
+	outline.joint_mode = outline_joint_mode
+	outline.end_cap_mode = outline_cap_mode
 	outline.width = outline_width
 	outline.points = points
-	print("Drawing terrain outline")
