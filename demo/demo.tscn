@@ -1,3 +1,21 @@
-[gd_scene format=3 uid="uid://ppp8dtb5djr4"]
+[gd_scene load_steps=5 format=3 uid="uid://ppp8dtb5djr4"]
+
+[ext_resource type="Script" path="res://terrain.gd" id="1_o8ja8"]
+[ext_resource type="Texture2D" uid="uid://bj58dl11acfkh" path="res://demo/demo_base_texture.png" id="2_0ykil"]
+[ext_resource type="Texture2D" uid="uid://osnxbh5yjc3x" path="res://demo/demo_outline_texture.png" id="3_2rrbq"]
+
+[sub_resource type="Curve2D" id="Curve2D_n7to7"]
+_data = {
+"points": PackedVector2Array(-115.353, 39.2438, 115.353, -39.2438, 255, 179, -202.209, -220.42, 202.209, 220.42, 796, 102, 23.7841, -82.0553, -23.7841, 82.0553, 789, 396, 110.596, 16.6489, -110.596, -16.6489, 423, 525, -27.3518, 92.7581, 27.3518, -92.7581, 90, 345, 0, 0, 0, 0, 255, 179)
+}
+point_count = 6
 
 [node name="Main" type="Node2D"]
+
+[node name="Terrain" type="Path2D" parent="."]
+position = Vector2(77, -24)
+curve = SubResource("Curve2D_n7to7")
+script = ExtResource("1_o8ja8")
+polygon_texture = ExtResource("2_0ykil")
+outline_modulate = Color(1, 1, 1, 1)
+outline_texture = ExtResource("3_2rrbq")
