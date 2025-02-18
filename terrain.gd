@@ -15,6 +15,11 @@ extends Path2D
 		draw()
 		polygon_texture = value
 		polygon_texture.changed.connect(draw)
+## should the polygon use parent materials (useful for shaders)
+@export var polygon_use_parent_material: bool = true:
+	set(value):
+		draw()
+		polygon_use_parent_material = true
 ## should the polygon's texture be repeated
 @export var polygon_texture_repeat: CanvasItem.TextureRepeat = CanvasItem.TEXTURE_REPEAT_ENABLED:
 	set(value):
@@ -64,6 +69,11 @@ extends Path2D
 		outline_texture = value
 		outline_texture.changed.connect(draw)
 ## texture mode of the outline
+## should the outline use parent materials (useful for shaders)
+@export var outline_use_parent_material: bool = true:
+	set(value):
+		draw()
+		outline_use_parent_material = true
 @export var outline_texture_mode: Line2D.LineTextureMode = Line2D.LINE_TEXTURE_TILE:
 	set(value):
 		draw()
@@ -123,6 +133,7 @@ func draw_terrain_polygon(points: PackedVector2Array) -> void:
 	polygon.texture_scale = texture_scale
 	polygon.texture_rotation = texture_rotation
 	polygon.texture_repeat = polygon_texture_repeat
+	polygon.use_parent_material = polygon_use_parent_material
 	terrain_parts.append(polygon)
 
 
@@ -156,3 +167,4 @@ func draw_outline(points: PackedVector2Array) -> void:
 	outline.end_cap_mode = outline_cap_mode
 	outline.width = outline_width
 	outline.points = points
+	outline.use_parent_material = outline_use_parent_material

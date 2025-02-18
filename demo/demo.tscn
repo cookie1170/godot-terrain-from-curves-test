@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dc0m83uogtdsb"]
+[gd_scene load_steps=9 format=3 uid="uid://dc0m83uogtdsb"]
 
 [ext_resource type="PackedScene" uid="uid://cbph66cuvp4h0" path="res://demo/demo_player.tscn" id="1_cqinm"]
 [ext_resource type="Script" path="res://terrain.gd" id="1_o8ja8"]
@@ -6,9 +6,9 @@
 
 [sub_resource type="Curve2D" id="Curve2D_aqvcn"]
 _data = {
-"points": PackedVector2Array(-107.756, 72.96, 107.756, -72.96, 184, 272, -68.6657, -4.40972, 68.6657, 4.40972, 360, 216, -22.0486, -58.5863, 22.0486, 58.5863, 440, 280, 49.6129, -47.0902, -49.6129, 47.0902, 352, 424, 25.2269, 136.225, -25.2269, -136.225, 72, 424, -33.7119, 25.4712, 33.7119, -25.4712, 184, 272)
+"points": PackedVector2Array(-107.756, 72.96, 107.756, -72.96, 184, 272, -68.6657, -4.40972, 68.6657, 4.40972, 360, 216, -32.128, -13.2291, 32.128, 13.2291, 472, 232, 0, 0, 0, 0, 424.841, 340.284, 49.6129, -47.0902, -49.6129, 47.0902, 352, 424, 25.2269, 136.225, -25.2269, -136.225, 72, 424, -33.7119, 25.4712, 33.7119, -25.4712, 184, 272)
 }
-point_count = 6
+point_count = 7
 
 [sub_resource type="Curve2D" id="Curve2D_o0ceg"]
 _data = {
@@ -16,11 +16,27 @@ _data = {
 }
 point_count = 8
 
+[sub_resource type="Curve2D" id="Curve2D_fqm4e"]
+_data = {
+"points": PackedVector2Array(-82.5448, 39.685, 82.5448, -39.685, 1144, 128, -38.1407, -0.529732, 38.1407, 0.529732, 1296, 80, -18.0109, -23.3082, 18.0109, 23.3082, 1536, 104, 20.9763, -23.9729, -20.9763, 23.9729, 1544, 256, 42.7018, 14.2339, -42.7018, -14.2339, 1208, 368, -3.74577, 53.1899, 3.74577, -53.1899, 1064, 272, -32.3136, 25.9568, 32.3136, -25.9568, 1144, 128)
+}
+point_count = 7
+
+[sub_resource type="Curve2D" id="Curve2D_6ji1h"]
+_data = {
+"points": PackedVector2Array(41.655, -44.659, -41.655, 44.659, 216, -272, -61.8186, -0.0402603, 61.8186, 0.0402603, 296, -192, -32.6091, -3.27587, 32.6091, 3.27587, 384, -176, -39.9587, 10.2679, 39.9587, -10.2679, 464, -192, -4.1956, 57.6432, 4.1956, -57.6432, 520, -272, 60.57, 15.8602, -60.57, -15.8602, 440, -360, 41.4624, -40.6013, -41.4624, 40.6013, 264, -320, 27.2705, -29.3528, -27.2705, 29.3528, 216, -272)
+}
+point_count = 8
+
+[sub_resource type="Curve2D" id="Curve2D_0fu1f"]
+_data = {
+"points": PackedVector2Array(-29.2601, 49.0815, 29.2601, -49.0815, 864, -224, -54.7447, -13.2142, 54.7447, 13.2142, 1008, -336, -13.2142, -41.5305, 13.2142, 41.5305, 1208, -296, 31.4717, -13.471, -31.4717, 13.471, 1168, -136, 63.3051, 11.1739, -63.3051, -11.1739, 960, -104, -22.653, 55.6886, 22.653, -55.6886, 864, -224)
+}
+point_count = 6
+
 [node name="Demo" type="Node2D"]
 
 [node name="DemoPlayer" parent="." instance=ExtResource("1_cqinm")]
-speed = 450.0
-jump_vel = -600.0
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
@@ -30,10 +46,29 @@ curve = SubResource("Curve2D_aqvcn")
 script = ExtResource("1_o8ja8")
 polygon_texture = ExtResource("3_o0hd8")
 texture_scale = Vector2(8, 8)
-skip_error = null
 
 [node name="Terrain2" type="Path2D" parent="StaticBody2D"]
 curve = SubResource("Curve2D_o0ceg")
+script = ExtResource("1_o8ja8")
+polygon_texture = ExtResource("3_o0hd8")
+texture_scale = Vector2(8, 8)
+
+[node name="Terrain3" type="Path2D" parent="StaticBody2D"]
+position = Vector2(8, 0)
+curve = SubResource("Curve2D_fqm4e")
+script = ExtResource("1_o8ja8")
+polygon_texture = ExtResource("3_o0hd8")
+texture_scale = Vector2(8, 8)
+
+[node name="Terrain4" type="Path2D" parent="StaticBody2D"]
+position = Vector2(-16, 8)
+curve = SubResource("Curve2D_6ji1h")
+script = ExtResource("1_o8ja8")
+polygon_texture = ExtResource("3_o0hd8")
+texture_scale = Vector2(8, 8)
+
+[node name="Terrain5" type="Path2D" parent="StaticBody2D"]
+curve = SubResource("Curve2D_0fu1f")
 script = ExtResource("1_o8ja8")
 polygon_texture = ExtResource("3_o0hd8")
 texture_scale = Vector2(8, 8)
