@@ -3,12 +3,6 @@ class_name Terrain
 extends Path2D
 
 #region exports
-@export_group("Bake Settings")
-## maximum number of subdivisions, higher number - more accuracy, less performance
-@export var max_segments: int = 5
-## the amount of degrees the baked curve can deviate from the real curve until it has to be subdivided,
-## lower number - more accuracy, less performance
-@export var tolerange_degrees: float = 1.0
 @export_group("Base Polygon")
 ## the tint of the polygon, should be white if it has a texture unless desired otherwise
 @export var polygon_modulate: Color = Color.WHITE:
@@ -48,7 +42,7 @@ extends Path2D
 		draw()
 		add_outline = value
 ## width of the ouline
-@export_range(0, 64, 0.5) var outline_width: float = 16.0:
+@export_range(0, 64, 0.5) var outline_width: float = 4.0:
 	set(value):
 		draw()
 		outline_width = value
@@ -90,6 +84,8 @@ extends Path2D
 	set(value):
 		draw()
 		add_collision = value
+## skips the error if the terrain is not child of a PhysicsBody2D
+@export var skip_error: bool = false
 #endregion
 
 #region misc variables
@@ -98,6 +94,8 @@ var terrain_parts: Array[Node]
 
 func _ready() -> void:
 	draw()
+	if not skip_error and add_collision and get_parent() is not PhysicsBody2D:
+		push_error("Terrain is not child of a PhysicsBody2D, the collision will not work, if desired, turn on Skip Error")
 	if Engine.is_editor_hint():
 		curve.changed.connect(draw)
 
@@ -106,7 +104,7 @@ func draw() -> void:
 	for part: Node in terrain_parts:
 		terrain_parts.erase(part)
 		part.free()
-	var baked_points: PackedVector2Array = curve.tessellate(max_segments, tolerange_degrees)
+	var baked_points: PackedVector2Array = curve.get_baked_points()
 	draw_terrain_polygon(baked_points)
 	if add_collision:
 		create_collision_polygon(curve.tessellate(3, 4))
@@ -136,11 +134,17 @@ func create_collision_polygon(points: PackedVector2Array) -> void:
 	terrain_parts.append(polygon)
 	polygon.polygon = points
 	polygon.hide()
+	if get_parent() is not PhysicsBody2D:
+		var static_body: StaticBody2D = StaticBody2D.new()
+		get_parent().call_deferred("add_child", static_body)
+		call_deferred("reparent", static_body, true)
 
 
 func draw_outline(points: PackedVector2Array) -> void:
 	var outline: Line2D = Line2D.new()
 	terrain_parts.append(outline)
+	for point: Vector2 in points:
+		point *= 0.8
 	add_child(outline)
 	outline.default_color = outline_modulate
 	if outline_texture:
